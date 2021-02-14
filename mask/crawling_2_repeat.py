@@ -13,7 +13,7 @@ driver.get('https://www.google.co.kr/imghp?hl=ko&tab=ri&ogbl')
 elem=driver.find_element_by_name('q')
 
 # input keys & enter
-elem.send_keys('사람 얼굴')
+elem.send_keys('마스크 낀 얼굴')
 elem.send_keys(Keys.RETURN)
 
 # scroll web page
@@ -44,13 +44,13 @@ for image in images:
     try:
         image.click()
         time.sleep(2)
-        imgUrl=driver.find_element_by_css_selector('.n3VNCb').get_attribute('src')
+        imgUrl=driver.find_element_by_xpath('/html/body/div[2]/c-wiz/div[3]/div[2]/div[3]/div/div/div[3]/div[2]/c-wiz/div/div[1]/div[1]/div/div[2]/a/img').get_attribute('src')
         # opener=urllib.request.build_opener()
         # opener.addheaders=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1941.0 Safari/537.36')]
         # urllib.request.install_opener(opener)
         # urllib.request.urlretrieve(imgUrl, "test.jpg")
         # Forbidden 이 뜨면 위의 코드를 추가한다
-        urllib.request.urlretrieve(imgUrl, 'no_mask'+str(count)+'.jpg')
+        urllib.request.urlretrieve(imgUrl, 'mask'+str(count)+'.jpg')
         count=count+1
     except:
         pass
