@@ -13,7 +13,7 @@ driver.get('https://www.google.co.kr/imghp?hl=ko&tab=ri&ogbl')
 elem=driver.find_element_by_name('q')
 
 # input keys & enter
-elem.send_keys('mask face')
+elem.send_keys('shtterstock mask face')
 elem.send_keys(Keys.RETURN)
 
 # scroll web page
@@ -25,7 +25,7 @@ while True: # 무한 반복
     driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')
     # 스크롤을 끝까지 내린다
 
-    time.sleep(SCROLL_PAUSE_TIME) # 스크롤이 끝나면 0.5초동안 기다림
+    time.sleep(SCROLL_PAUSE_TIME) # 스크롤이 끝나면 1초동안 기다림
 
     new_height=driver.execute_script('return document.body.scrollHeight')
     if new_height==last_height:
@@ -51,8 +51,9 @@ for image in images:
         # urllib.request.urlretrieve(imgUrl, "test.jpg")
         # Forbidden 이 뜨면 위의 코드를 추가한다
         time.sleep(2)
-        urllib.request.urlretrieve(imgUrl, 'unsp_mask'+str(count)+'.jpg')
+        urllib.request.urlretrieve(imgUrl, 'shutterstock_mask'+str(count)+'.jpg')
         count=count+1
     except:
         pass
 driver.close()
+
