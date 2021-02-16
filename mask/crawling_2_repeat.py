@@ -13,7 +13,7 @@ driver.get('https://www.google.co.kr/imghp?hl=ko&tab=ri&ogbl')
 elem=driver.find_element_by_name('q')
 
 # input keys & enter
-elem.send_keys('shtterstock mask face')
+elem.send_keys('face pareidolia')
 elem.send_keys(Keys.RETURN)
 
 # scroll web page
@@ -42,18 +42,23 @@ count=1
 
 for image in images:
     try:
-        image.click()
-        time.sleep(2)
-        imgUrl=driver.find_element_by_xpath('/html/body/div[2]/c-wiz/div[3]/div[2]/div[3]/div/div/div[3]/div[2]/c-wiz/div/div[1]/div[1]/div/div[2]/a/img').get_attribute('src')
-        # opener=urllib.request.build_opener()
-        # opener.addheaders=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1941.0 Safari/537.36')]
-        # urllib.request.install_opener(opener)
-        # urllib.request.urlretrieve(imgUrl, "test.jpg")
-        # Forbidden 이 뜨면 위의 코드를 추가한다
-        time.sleep(2)
-        urllib.request.urlretrieve(imgUrl, 'shutterstock_mask'+str(count)+'.jpg')
-        count=count+1
+        image.click() # 인터넷 상의 이미지 클릭
+        time.sleep(2) # 이미지 로드 시간을 위해 지연시간 추가
+        imgUrl=driver.find_element_by_xpath('/html/body/div[2]/c-wiz/div[3]/div[2]/div[3]/div/div/div[3]/div[2]/c-wiz/div/div[1]/div[1]/div/div[2]/a/img').get_attribute('src') # 저장할 이미지 경로
+        '''
+        opener=urllib.request.build_opener()
+        opener.addheaders=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1941.0 Safari/537.36')]
+        urllib.request.install_opener(opener)
+        urllib.request.urlretrieve(imgUrl, "test.jpg")
+        
+        Forbidden 이 뜨면 위의 코드를 추가한다
+        python 으로 제어 되는 브라우저를 봇으로 인식하는 경우,
+        위의 header 를 추가해주면 해당 문제를 벗어날 수 있다.
+        '''
+        time.sleep(2) # 저장 후 페이지 로드 할 시간을 위해 지연시간 추가
+        urllib.request.urlretrieve(imgUrl, 'pareidolia'+str(count)+'.jpg') # 이미지 저장
+        count=count+1 # 이미지 파일 이름을 순서대로 맞추기 위해 증가시킴
     except:
         pass
-driver.close()
 
+driver.close() # 웹페이지 종료
