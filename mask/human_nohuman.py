@@ -20,30 +20,48 @@ from keras.layers import Flatten, Dense, Conv2D, \
 from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 from keras.preprocessing.image import ImageDataGenerator
 from keras.optimizers import Adam, RMSprop
+from keras.utils import to_categorical
 
 from sklearn.model_selection import train_test_split
 
-# image_list=glob('c:/datasets/face_train/*.jpg')
+datagen=ImageDataGenerator(
+    width_shift_range=0.1,
+    height_shift_range=0.1,
+    vertical_flip=True,
+    horizontal_flip=True
+)
+
+datagen2=ImageDataGenerator()
+
+kernel=np.array([[0, -1, 0], [-1, 5, 0], [0, -1, 0]])
 
 data=list()
 label=list()
 img_list=glob('c:/datasets/face_train/human/*.jpg')
 par_list=glob('c:/datasets/face_train/no_human/*.jpg') # 유사 사람 얼굴
+rectangle=(0, 56, 256, 150)
 
 for i in img_list:
-    img=tf.keras.preprocessing.image.load_img(i,
-    color_mode='rgb',
-    target_size=(128, 128))
-    img=np.array(img)/255.
-    data.append(img)
-    label.append(0)
-    
+    try:
+        img=tf.keras.preprocessing.image.load_img(i,
+        color_mode='grayscale',
+        target_size=(256, 256),
+        interpolation='nearest')
+        img=np.array(img)/255.
+        img=img.reshape(256, 256, 1)
+        data.append(img)
+        label.append(0)
+    except:
+        pass
+
 for i in par_list:
     try:
         par=tf.keras.preprocessing.image.load_img(i,
-        color_mode='rgb',
-        target_size=(128, 128))
+        color_mode='garyscale',
+        target_size=(256, 256),
+        interpolation='nearest')
         par=np.array(par)/255.
+        par=par.reshape(256, 256, 1)
         data.append(par)
         label.append(1)
     except:
@@ -52,29 +70,7 @@ for i in par_list:
 data=np.array(data)
 label=np.array(label)
 
-# datagen=ImageDataGenerator(
-#     width_shift_range=0.1,
-#     height_shift_range=0.1,
-#     vertical_flip=True,
-#     horizontal_flip=True,
-#     validation_split=0.2,
-#     rescale=1./255
-# )
-
-# datagen2=ImageDataGenerator()
-
-# print(type(data)) # 867
-# print(type(label)) # 867
-# print(len(data)) # 867
-# print(len(label)) # 867
-# print(len(img_list)) # 393
-# print(len(par_list)) # 473
-
-# print(data) 
-# print(label)
-
-# data = x
-# label = y
+label=to_categorical(label)
 
 x_train, x_test, y_train, y_test=train_test_split(
     data, label,
@@ -88,43 +84,38 @@ x_train, x_val, y_train, y_val=train_test_split(
     random_state=23
 )
 
-# trainset=datagen.flow(
+# train_set=datagen.flow(
 #     x_train, y_train,
-#     batch_size=32
+#     batch_size=4
 # )
 
-# valset=datagen2.flow(
-#     x_val, y_val
-# )
-
-# testset=datagen2.flow(
+# test_set=datagen2.flow(
 #     x_test, y_test
 # )
 
-# print(x_train.shape) # (658, 128, 128, 3)
+# val_set=datagen2.flow(
+#     x_val, y_val
+# )
 
-# x_train=x_train.reshape(-1, 128, 128, 1)
-# x_test=x_test.reshape(-1, 128, 128, 1)
-# x_val=x_val.reshape(-1, 128, 128, 1)
-
-np.save('c:/datasets/face_train/x_train.npy', arr=x_train) # x
-np.save('c:/datasets/face_train/y_train.npy', arr=y_train) # y
-np.save('c:/datasets/face_train/x_val.npy', arr=x_val) # x
-np.save('c:/datasets/face_train/y_val.npy', arr=y_val) # y
-np.save('c:/datasets/face_train/x_test.npy', arr=x_test)
-np.save('c:/datasets/face_train/y_test.npy', arr=y_test)
+# np.save('c:/datasets/face_train/x_train.npy', arr=x_train) # x
+# np.save('c:/datasets/face_train/y_train.npy', arr=y_train) # y
+# np.save('c:/datasets/face_train/x_val.npy', arr=x_val) # x
+# np.save('c:/datasets/face_train/y_val.npy', arr=y_val) # y
+# np.save('c:/datasets/face_train/x_test.npy', arr=x_test)
+# np.save('c:/datasets/face_train/y_test.npy', arr=y_test)
 
 
 es=EarlyStopping(
     monitor='val_loss',
-    patience=100,
+    patience=150,
     verbose=1
 )
 
 rl=ReduceLROnPlateau(
     monitor='val_loss',
-    patience=30,
-    verbose=1
+    patience=20,
+    verbose=1,
+    factor=0.1
 )
 
 mc=ModelCheckpoint(
@@ -135,7 +126,7 @@ mc=ModelCheckpoint(
 )
 
 model=Sequential()
-model.add(Conv2D(64, 2, padding='same', input_shape=(128, 128, 3)))
+model.add(Conv2D(64, 2, padding='same', input_shape=(256, 256, 1)))
 model.add(BatchNormalization())
 model.add(Activation('relu'))
 model.add(Conv2D(64, 2, padding='same'))
@@ -157,36 +148,39 @@ model.add(BatchNormalization())
 model.add(Activation('relu'))
 model.add(MaxPooling2D(2, padding='same'))
 
-model.add(Conv2D(256, 2, padding='same'))
-model.add(BatchNormalization())
-model.add(Activation('relu'))
-model.add(Conv2D(256, 2, padding='same'))
-model.add(BatchNormalization())
-model.add(Activation('relu'))
-model.add(Conv2D(256, 2, padding='same'))
-model.add(BatchNormalization())
-model.add(Activation('relu'))
-model.add(MaxPooling2D(2, padding='same'))
+# model.add(Conv2D(256, 2, padding='same'))
+# model.add(BatchNormalization())
+# model.add(Activation('relu'))
+# model.add(Conv2D(256, 2, padding='same'))
+# model.add(BatchNormalization())
+# model.add(Activation('relu'))
+# model.add(Conv2D(256, 2, padding='same'))
+# model.add(BatchNormalization())
+# model.add(Activation('relu'))
+# model.add(MaxPooling2D(2, padding='same'))
 model.add(Flatten())
 
-model.add(Dense(1024))
-model.add(BatchNormalization())
-model.add(Activation('relu'))
-model.add(Dense(512))
-model.add(BatchNormalization())
-model.add(Activation('relu'))
-model.add(Dense(256))
-model.add(BatchNormalization())
-model.add(Activation('relu'))
+# model.add(Dense(1024))
+# model.add(BatchNormalization())
+# model.add(Activation('relu'))
+# model.add(Dense(512))
+# model.add(BatchNormalization())
+# model.add(Activation('relu'))
+# model.add(Dense(256))
+# model.add(BatchNormalization())
+# model.add(Activation('relu'))
+# model.add(Dense(128))
+# model.add(BatchNormalization())
+# model.add(Activation('relu'))
 
-model.add(Dense(1, activation='sigmoid'))
+model.add(Dense(1, activation='softmax'))
 
 # 컴파일, 훈련
 model.compile(
     optimizer=RMSprop(
-        learning_rate=0.1,
+        learning_rate=0.01,
         epsilon=None),
-    loss='binary_crossentropy',
+    loss='categorical_crossentropy',
     metrics='acc'
 )
 
@@ -194,15 +188,23 @@ model.fit(
     x_train, y_train,
     validation_data=(x_val, y_val),
     epochs=1000,
-    batch_size=16,
+    batch_size=12,
     callbacks=[es, rl, mc]
 )
 
 # model.fit_generator(
-#     trainset,
-#     validation_data=valset,
-#     steps_per_epoch=21,
+#     train_set,
+#     validation_data=val_set,
+#     steps_per_epoch=137,
 #     epochs=1000,
+#     callbacks=[es, rl, mc]
+# )
+
+# model.fit(
+#     train_set,
+#     validation_data=val_set,
+#     steps_per_epoch=273,
+#     epochs=50,
 #     callbacks=[es, rl, mc]
 # )
 
@@ -211,16 +213,16 @@ loss=model.evaluate(
 )
 
 # loss=model.evaluate_generator(
-#     testset
+#     test_set
 # )
 
-pred=model.predict(
-    x_test
-)
-
-# pred=model.predict_generator(
+# pred=model.predict(
 #     x_test
 # )
+
+pred=model.predict_generator(
+    x_test
+)
 
 pred=np.where(pred>0.5, 1, 0)
 pred1=pred[:5]
@@ -236,50 +238,3 @@ print(pred1)
 # results
 # [1.1617838144302368, 0.6818181872367859]
 
-'''
-for i in img_list:
-    # img=cv2.imread('c:/datasets/face_train/human/face_train (%s).jpg'%i)
-    img=cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    img=cv2.resize(img, (256, 256), interpolation=cv2.INTER_LANCZOS4)
-    img=np.array(img)/255.
-    img_list.append(img)
-    # label.append(0)
-
-
-for i in par_list:
-    par_img=cv2.imread('c:/datasets/face_train/no_human/pareidolia%s.jpg'%i)
-    par_img=cv2.cvtColor(par_img, cv2.COLOR_BGR2RGB)
-    par_img=cv2.resize(par_img, (256, 256), interpolation=cv2.INTER_LANCZOS4)
-    par_img=np.array(par_img)/255.
-    par_img.append(par_img)
-    # label.append(1)
-
-'''
-'''
-
-filepath='c:/datasets/face_train/'
-
-import io
-
-train=datagen.flow_from_directory(
-    filepath,
-    target_size=(256, 256),
-    class_mode='sparse',
-    subset='training',
-    batch_size=696,
-    shuffle=False
-) # 696
-
-# val=datagen.flow_from_directory(
-#     filepath,
-#     target_size=(256, 256),
-#     class_mode='sparse',
-#     subset='validation',
-#     batch_size=173,
-#     shuffle=False
-# ) # 173
-
-
-print(train[0])
-print(val[0])
-'''
