@@ -5,7 +5,7 @@ import glob
 import cv2
 import datetime
 import matplotlib.pyplot as plt
-import cvlib as cv
+# import cvlib as cv
 
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Flatten, \
@@ -13,6 +13,7 @@ from keras.layers import Conv2D, MaxPooling2D, Flatten, \
 from keras.optimizers import Adam, RMSprop, Adamax, Adadelta
 from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 from keras.preprocessing.image import ImageDataGenerator
+from keras.utils import to_categorical
 
 from PIL import Image
 
@@ -21,30 +22,31 @@ from sklearn.model_selection import train_test_split
 # img_list=glob('c:/datasets/face_train/human/mask/*.jpg')
 # img_list_2=glob('c:/datasets/face_train/human/nomask/*.jpg')
 
-img_list=glob.glob('e:/datasets/train_face/train_mask/*.jpg')
-img_list_2=glob.glob('e:/datasets/train_face/train_nomask/*.jpg')
-test_img=glob.glob('e:/datasets/train_face/mask/*.jpg')
+# 이미지 로드
+img_list=glob.glob('c:/datasets/train_face/train_mask/*.jpg')
+img_list_2=glob.glob('c:/datasets/train_face/train_nomask/*.jpg')
+par_img=glob.glob('c:/datasets/train_face/pareidolia/*.jpg')
 
 
 data=list()
 label=list()
-test=list()
 
-
-# print('preprocessing')
-
+count=1
+print('preprocessing')
+str_time=datetime.datetime.now()
 for i in img_list: # mask
     try:
         img=cv2.imread(i)
         img=cv2.resize(img, (256, 256))
         img=cv2.cvtColor(img, code=cv2.COLOR_BGR2RGB)
         img=cv2.fastNlMeansDenoisingColored(img, h=10, templateWindowSize=7, searchWindowSize=21)
-        cv2.imwrite('e:/datasets/train_face/train_mask/edit_mask'+str(i)+'.jpg', img)
         img=np.array(img)/255.
+        cv2.imwrite('c:/datasets/face_train/train_mask/edit_' + str(count) + '.jpg', img)
         data.append(img)
         label.append(0)
     except:
         pass
+print('mask preprocessing : ', datetime.datetime.now()-str_time) # 2 min
 
 for i in img_list_2: # nomask
     try:
@@ -52,28 +54,39 @@ for i in img_list_2: # nomask
         img=cv2.resize(img, (256, 256))
         img=cv2.cvtColor(img, code=cv2.COLOR_BGR2RGB)
         img=cv2.fastNlMeansDenoisingColored(img, h=10, templateWindowSize=7, searchWindowSize=21)
-        cv2.imwrite('e:/datasets/train_face/train_mask/edit_nomask'+str(i)+'.jpg', img)
         img=np.array(img)/255.
+        cv2.imwrite('c:/datasets/face_train/train_mask/edit_' + str(count) + '.jpg', img)
+
         data.append(img)
         label.append(1)
     except:
         pass
+print('nomask preprocessing : ',datetime.datetime.now()-str_time) # 2 min
 
-for i in test_img:
+for i in par_img:
     try:
         img=cv2.imread(i)
         img=cv2.resize(img, (256, 256))
         img=cv2.cvtColor(img, code=cv2.COLOR_BGR2RGB)
         img=cv2.fastNlMeansDenoisingColored(img, h=10, templateWindowSize=7, searchWindowSize=21)
-        cv2.imwrite('e:/datasets/train_face/mask/edit_mask'+str(i)+'.jpg', img)
         img=np.array(img)/255.
-        test.append(img)
+        cv2.imwrite('c:/datasets/face_train/train_mask/edit_' + str(count) + '.jpg', img)
+        data.append(img)
+        label.append(2)
+    except:
+        pass
+print('test preprocessing : ',datetime.datetime.now()-str_time) # 5 min
 
-x_train, x_val, y_train, y_val=train_test_split(
-    data, label,
-    train_size=0.8,
-    random_state=23
-)
+data=np.array(data)
+label=np.array(label)
+# test=np.array(test)
+
+# data=data.reshape(-1, 256, 256, 1)
+
+print(data.shape)
+print(label.shape)
+
+x_train, x_test, y_train, y_test=train_test_split(data, label, train_size=0.9, random_state=23)
 
 es=EarlyStopping(
     monitor='val_loss',
@@ -96,7 +109,7 @@ mc=ModelCheckpoint(
 )
 
 model=Sequential()
-model.add(Conv2D(64, 2, padding='same', input_shape=(256, 256, 1)))
+model.add(Conv2D(64, 2, padding='same', input_shape=(256, 256, 3)))
 model.add(BatchNormalization())
 model.add(Activation('relu'))
 model.add(Conv2D(64, 2, padding='same'))
@@ -148,28 +161,30 @@ model.add(Dense(1, activation='softmax'))
 # 컴파일, 훈련
 model.compile(
     optimizer=RMSprop(
-        learning_rate=0.01,
-        epsilon=None),
-    loss='categorical_crossentropy',
+        learning_rate=0.01
+        ),
+    loss='sparse_categorical_crossentropy',
     metrics='acc'
 )
 
-history=model.fit(
-    x_train, y_train,
-    validation_data=(x_val, y_val),
-    epochs=1000,
-    batch_size=12,
-    callbacks=[es, rl, mc]
+model.fit(
+x_train, y_train,
+validation_split=0.2,
+epochs=1000,
+batch_size=8,
+callbacks=[es, rl, mc]
+)
+
+loss=model.evaluate(
+    x_test, y_test
 )
 
 pred=model.predict(
-    test
+   x_test
 )
 
-print(history[0])
-print(history[1])
-
+print(loss)
 print(pred[0])
 
-plt.imshow(test[0])
-plt.show()
+# plt.imshow(test[0])
+# plt.show()
