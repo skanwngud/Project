@@ -13,7 +13,7 @@ driver.get('https://www.google.co.kr/imghp?hl=ko&tab=ri&ogbl')
 elem=driver.find_element_by_name('q')
 
 # input keys & enter
-elem.send_keys('mask men')
+elem.send_keys('mask women')
 elem.send_keys(Keys.RETURN)
 
 # scroll web page
