@@ -295,7 +295,7 @@ epoch=len(x_train)//batch_size
 model.fit_generator(
     trainset,
     validation_data=valset,
-    epochs=1000,
+    epochs=500,
     steps_per_epoch=epoch,
     callbacks=[es, rl, mc]
 )
@@ -306,25 +306,57 @@ pred=np.argmax(pred, axis=-1)
 
 
 print(type(pred[0]))
+print(type(pred))
 print('전체 : ', len(all_list)) # 1632
 print('마스크사람 : ', len(all_list)-np.count_nonzero(pred))
 print('마스크비율 : ', 1-np.count_nonzero(pred)/len(all_list))
 print(pred[:5])
 
+import csv
 
-imgnum=0
-for i in pred:
-    if pred[i]==0:
-        image=cv2.imread()
-        cv2.imwrite('c:/datasets/train_face/true_mask/' + str(imgnum) + '.jpg', image)
-        imgnum+=1
-    elif pred[i]==1:
-        cv2.imwrite('c:/datasets/train_face/true_nomask/' + str(imgnum) + '.jpg', image)
-        imgnum+=1
-    elif pred[i]==2:
-        cv2.imwrite('c:/datasets/train_face/true_pareidolia/' + str(imgnum) + '.jpg', image)
-        imgnum+=1
+# imgnum=0
+# copunt=0
+# for i in pred:
+#     if pred[i]==0:
+#         # f=open('/c:/datasets/train_face/true_mask/' + str(imgnum) + '.csv', 'w', encoding='utf-8')
+#         # wr=csv.write(f)
+#         # cv2.imwrite('c:/datasets/train_face/true_mask/' + str(imgnum) + '.jpg', pred[count])
+#         np.save('c:/dataset/train_face/true_mask/' + str(imgnum) + '.npy', arr=pred[i])
+#         # img=np.load('c:/dataset/train_face/true_mask/' + str(imgnum) + '.npy')
+#         # im=Image.fromarray((img*255).astype(np.uint8))
+#         # im.save('c:/datasets/train_face/true_mask/true_mask' + str(imgnum) + '.jpg')
+#         imgnum+=1
+#     elif pred[i]==1:
+#         # f=open('/c:/datasets/train_face/true_mask/' + str(imgnum) + '.csv', 'w', encoding='utf-8')
+#         # wr=csv.write(f)
+#         # cv2.imwrite('c:/datasets/train_face/true_nomask/' + str(imgnum) + '.jpg', pred[count])
+#         np.save('c:/dataset/train_face/true_nomask/' + str(imgnum) + '.npy', arr=pred[i])
+#         # img=np.load('c:/dataset/train_face/true_nomask/' + str(imgnum) + '.npy')
+#         # im=Image.fromarray((img*255).astype(np.uint8))
+#         # im.save('c:/datasets/train_face/true_nomask/true_nomask' + str(imgnum) + '.jpg')
+
+#         imgnum+=1
+#     elif pred[i]==2:
+#         # f=open('/c:/datasets/train_face/true_mask/' + str(imgnum) + '.csv', 'w', encoding='utf-8')
+#         # wr=csv.write(f)
+#         # cv2.imwrite('c:/datasets/train_face/true_pareidolia/' + str(imgnum) + '.jpg', pred[count])
+#         np.save('c:/dataset/train_face/true_pareidolia/' + str(imgnum) + '.npy', arr=pred[i])
+#         # img=np.load('c:/dataset/train_face/true_pareidolia/' + str(imgnum) + '.npy')
+#         # im=Image.fromarray((img*255).astype(np.uint8))
+#         # im.save('c:/datasets/train_face/true_mask/true_pareidolia' + str(imgnum) + '.jpg')
+
+#         imgnum+=1
+#     count+=1
+
+import pandas as pd
+
+pred_df=pd.DataFrame(pred)
+
+print(pred_df.info())
+
 
 # results
-# no_imagedatagenerator
-# 
+
+# 전체 :  1294
+# 마스크사람 :  297
+# 마스크비율 :  0.22952086553323026
