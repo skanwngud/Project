@@ -22,16 +22,17 @@ from sklearn.model_selection import train_test_split, KFold
 # img_list=glob('c:/datasets/face_train/human/mask/*.jpg')
 # img_list_2=glob('c:/datasets/face_train/human/nomask/*.jpg')
 
-# img_list=glob.glob('f:/datasets/train_face/edit/mask/*.jpg')
-# img_list_2=glob.glob('f:/datasets/train_face/edit/nomask/*.jpg')
-# par_img=glob.glob('f:/datasets/train_face/edit/pareidolia/*.jpg')
+# img_list=glob.glob('e:/datasets/train_face/edit/mask/*.jpg')
+# img_list_2=glob.glob('e:/datasets/train_face/edit/nomask/*.jpg')
+# par_img=glob.glob('e:/datasets/train_face/edit/pareidolia/*.jpg')
 
-all_list=glob.glob('f:/datasets/train_face/true_all/*.jpg')
+# all_list=glob.glob('f:/datasets/train_face/true_all/*.jpg')
+all_list=glob.glob('c:/dataset/mask/export/images/*.jpg')
 
 # print(len(img_list))
 
-# data=list()
-# label=list()
+data=list()
+label=list()
 test=list()
 
 str_time=datetime.datetime.now()
@@ -171,12 +172,12 @@ datagen2=ImageDataGenerator()
 # y_val=to_categorical(y_val)
 # y_test=to_categorical(y_test)
 
-# np.save('f:/data/npy/pro_x_train.npy', arr=x_train)
-# np.save('f:/data/npy/pro_x_test.npy', arr=x_test)
-# np.save('f:/data/npy/pro_x_val.npy', arr=x_val)
-# np.save('f:/data/npy/pro_y_train.npy', arr=y_train)
-# np.save('f:/data/npy/pro_y_test.npy', arr=y_test)
-# np.save('f:/data/npy/pro_y_val.npy', arr=y_val)
+# np.save('e:/data/npy/pro_x_train.npy', arr=x_train)
+# np.save('e:/data/npy/pro_x_test.npy', arr=x_test)
+# np.save('e:/data/npy/pro_x_val.npy', arr=x_val)
+# np.save('e:/data/npy/pro_y_train.npy', arr=y_train)
+# np.save('e:/data/npy/pro_y_test.npy', arr=y_test)
+# np.save('e:/data/npy/pro_y_val.npy', arr=y_val)
 
 batch_size=8
 
@@ -277,7 +278,7 @@ model.compile(
     optimizer=Adam(
         learning_rate=0.001,
         epsilon=None),
-    loss='sparse_categorical_crossentropy',
+    loss='categorical_crossentropy',
     metrics='acc'
 )
 
@@ -311,18 +312,18 @@ print('마스크비율 : ', 1-np.count_nonzero(pred)/len(all_list))
 print(pred[:5])
 
 
-# imgnum=0
-# for i in pred:
-#     if image==0:
-#         image=cv2.imread()
-#         cv2.imwrite('f:/datasets/train_face/true_mask/' + str(imgnum) + '.jpg', image)
-#         imgnum+=1
-#     elif image==1:
-#         cv2.imwrite('f:/datasets/train_face/true_nomask/' + str(imgnum) + '.jpg', image)
-#         imgnum+=1
-#     elif image==2:
-#         cv2.imwrite('f:/datasets/train_face/true_pareidolia/' + str(imgnum) + '.jpg', image)
-#         imgnum+=1
+imgnum=0
+for i in pred:
+    if pred[i]==0:
+        image=cv2.imread()
+        cv2.imwrite('c:/datasets/train_face/true_mask/' + str(imgnum) + '.jpg', image)
+        imgnum+=1
+    elif pred[i]==1:
+        cv2.imwrite('c:/datasets/train_face/true_nomask/' + str(imgnum) + '.jpg', image)
+        imgnum+=1
+    elif pred[i]==2:
+        cv2.imwrite('c:/datasets/train_face/true_pareidolia/' + str(imgnum) + '.jpg', image)
+        imgnum+=1
 
 # results
 # no_imagedatagenerator

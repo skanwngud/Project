@@ -325,14 +325,14 @@ print(pred[0])
 plt.imshow(pred[0])
 plt.show()
 
-imgnum=0
-for image in pred:
-    if image==0:
-        cv2.imwrite('e:/datasets/train_face/true_mask/' + str(imgnum) + '.jpg', image)
-    elif image==1:
-        cv2.imwrite('e:/datasets/train_face/true_nomask/' + str(imgnum) + '.jpg', image)
-    elif image==2:
-        cv2.imwrite('e:/datasets/train_face/true_pareidolia/' + str(imgnum) + '.jpg', image)
+# imgnum=0
+# for image in pred:
+#     if image==0:
+#         cv2.imwrite('e:/datasets/train_face/true_mask/' + str(imgnum) + '.jpg', image)
+#     elif image==1:
+#         cv2.imwrite('e:/datasets/train_face/true_nomask/' + str(imgnum) + '.jpg', image)
+#     elif image==2:
+#         cv2.imwrite('e:/datasets/train_face/true_pareidolia/' + str(imgnum) + '.jpg', image)
 
 # results
 # no_imagedatagenerator
