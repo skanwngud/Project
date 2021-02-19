@@ -216,7 +216,7 @@ mc=ModelCheckpoint(
     monitor='val_loss',
     verbose=1,
     save_best_only=True,
-    filepath='c:/data/modelcheckpoint/project.hdf5'
+    filepath='c:/data/modelcheckpoint/project_{%s}.hdf5'%i
 )
 
 model=Sequential()
