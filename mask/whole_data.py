@@ -3,6 +3,8 @@ import tensorflow as tf
 import numpy as np
 import cv2
 
+from PIL import Image
+
 
 from glob import glob
 
@@ -26,17 +28,41 @@ for i in img_list:
     except:
         pass
 
-test=np.array(test).astype('float32')
-# test=datagen.flow(test)
+test=np.array(test)
+testflow=datagen.flow(test)
 
-pred=model.predict(test)
-pred=np.argmax(test, axis=-1)
+# pred=model.predict(test)
+pred=model.predict_generator(testflow)
+pred=np.argmax(pred, axis=-1)
 
 print(type(pred[0]))
+print(type(pred))
 print('전체 : ', len(img_list)) # 1632
 print('마스크사람 : ', len(img_list)-np.count_nonzero(pred))
 print('마스크비율 : ', np.count_nonzero(pred)/len(img_list))
-print(pred[0])
+
+i=0
+for i in range(len(test)):
+    if pred[i]==0:
+        np.save('c:/dataset/train_face/true_mask/' + str(i) + '.npy', arr=test[i])
+        img=np.load('c:/dataset/train_face/true_mask/' + str(i) + '.npy')
+        img=Image.fromarray((img*255).astype(np.uint8))
+        img.save('c:/dataset/train_face/true_mask/' + str(i) + '.jpg')
+        i+=1
+    elif pred[i]==1:
+        np.save('c:/dataset/train_face/true_nomask/' + str(i) + '.npy', arr=test[i])
+        img=np.load('c:/dataset/train_face/true_nomask/' + str(i) + '.npy')
+        img=Image.fromarray((img*255).astype(np.uint8))
+        img.save('c:/dataset/train_face/true_nomask/' + str(i) + '.jpg')
+        i+=1
+    elif pred[i]==2:
+        np.save('c:/dataset/train_face/true_pareidolia/' + str(i) + '.npy', arr=test[i])
+        img=np.load('c:/dataset/train_face/true_pareidolia/' + str(i) + '.npy')
+        img=Image.fromarray((img*255).astype(np.uint8))
+        img.save('c:/dataset/train_face/true_pareidolia/' + str(i) + '.jpg')
+        i+=1
+
+import matplotlib.pyplot as plt
 
 # results
 # best_project.hdf5
@@ -45,4 +71,4 @@ print(pred[0])
 # 마스크비율 :  3.0
 # [0.37070063 0.5508767  0.07842268]
 
-# best__project.hdf5 (128, 128)
+# best__project.hdf5

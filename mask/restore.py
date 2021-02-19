@@ -295,7 +295,7 @@ epoch=len(x_train)//batch_size
 model.fit_generator(
     trainset,
     validation_data=valset,
-    epochs=500,
+    epochs=1,
     steps_per_epoch=epoch,
     callbacks=[es, rl, mc]
 )
@@ -310,7 +310,7 @@ print(type(pred))
 print('전체 : ', len(all_list)) # 1632
 print('마스크사람 : ', len(all_list)-np.count_nonzero(pred))
 print('마스크비율 : ', 1-np.count_nonzero(pred)/len(all_list))
-print(pred[:5])
+print(pred.shape)
 
 import csv
 
@@ -360,3 +360,7 @@ print(pred_df.info())
 # 전체 :  1294
 # 마스크사람 :  297
 # 마스크비율 :  0.22952086553323026
+
+# 전체 :  1294
+# 마스크사람 :  229
+# 마스크비율 :  0.17697063369397215
