@@ -9,7 +9,7 @@ from glob import glob
 from keras.preprocessing.image import ImageDataGenerator
 from keras.models import load_model
 
-model=load_model('c:/data/modelcheckpoint/best_project.hdf5')
+model=load_model('c:/data/modelcheckpoint/best__project.hdf5')
 
 img_list=glob('c:/dataset/mask/export/images/*.jpg')
 
@@ -26,10 +26,10 @@ for i in img_list:
     except:
         pass
 
-test=np.array(test)
-test=datagen.flow()
+test=np.array(test).astype('float32')
+# test=datagen.flow(test)
 
-pred=model.predict_generator(test)
+pred=model.predict(test)
 pred=np.argmax(test, axis=-1)
 
 print(type(pred[0]))
@@ -39,7 +39,10 @@ print('마스크비율 : ', np.count_nonzero(pred)/len(img_list))
 print(pred[0])
 
 # results
+# best_project.hdf5
 # 전체 :  1009
 # 마스크사람 :  -2018
 # 마스크비율 :  3.0
 # [0.37070063 0.5508767  0.07842268]
+
+# best__project.hdf5 (128, 128)
