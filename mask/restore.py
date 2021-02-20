@@ -17,7 +17,8 @@ from keras.utils import to_categorical
 
 from PIL import Image
 
-from sklearn.model_selection import train_test_split, KFold
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.metrics import f1_score
 
 # img_list=glob('c:/datasets/face_train/human/mask/*.jpg')
 # img_list_2=glob('c:/datasets/face_train/human/nomask/*.jpg')
@@ -27,7 +28,8 @@ from sklearn.model_selection import train_test_split, KFold
 # par_img=glob.glob('e:/datasets/train_face/edit/pareidolia/*.jpg')
 
 # all_list=glob.glob('f:/datasets/train_face/true_all/*.jpg')
-all_list=glob.glob('c:/dataset/mask/export/images/*.jpg')
+# all_list=glob.glob('c:/dataset/mask/export/images/*.jpg')
+all_list=glob.glob('c:/dataset/export/images/*.jpg')
 
 # print(len(img_list))
 
@@ -188,12 +190,6 @@ y_test=np.load('c:/data/npy/pro_y_test.npy')
 x_val=np.load('c:/data/npy/pro_x_val.npy')
 y_val=np.load('c:/data/npy/pro_y_val.npy')
 
-trainset=datagen.flow(x_train, y_train, batch_size=batch_size)
-valset=datagen2.flow(x_val, y_val)
-testset=datagen2.flow(x_test, y_test)
-
-testflow=datagen2.flow(test)
-
 
 # np.save('c:/data/npy/pro_trainset.npy', arr=trainset)
 # np.save('c:/data/npy/pro_valset.npy', arr=valset)
@@ -201,7 +197,7 @@ testflow=datagen2.flow(test)
 
 es=EarlyStopping(
     monitor='val_loss',
-    patience=150,
+    patience=100,
     verbose=1
 )
 
@@ -216,21 +212,28 @@ mc=ModelCheckpoint(
     monitor='val_loss',
     verbose=1,
     save_best_only=True,
-    filepath='c:/data/modelcheckpoint/project_{%s}.hdf5'%i
+    filepath='c:/data/modelcheckpoint/project.hdf5'
 )
 
+
+trainset=datagen.flow(x_train, y_train, batch_size=batch_size)
+valset=datagen2.flow(x_val, y_val)
+testset=datagen2.flow(x_test, y_test)
+
+testflow=datagen2.flow(test)
+
 model=Sequential()
-model.add(Conv2D(64, 2, padding='same', input_shape=(256, 256, 3)))
+model.add(Conv2D(256, 2, padding='same', input_shape=(256, 256, 3)))
 model.add(BatchNormalization())
 model.add(Activation('relu'))
-model.add(Conv2D(64, 2, padding='same'))
+model.add(Conv2D(256, 2, padding='same'))
 model.add(BatchNormalization())
 model.add(Activation('relu'))
-model.add(Conv2D(64, 2, padding='same'))
+model.add(Conv2D(256, 2, padding='same'))
 model.add(BatchNormalization())
 model.add(Activation('relu'))
 model.add(MaxPooling2D(2, padding='same'))
-model.add(Dropout(0.2))
+model.add(Dropout(0.4))
 
 model.add(Conv2D(128, 2, padding='same'))
 model.add(BatchNormalization())
@@ -242,24 +245,25 @@ model.add(Conv2D(128, 2, padding='same'))
 model.add(BatchNormalization())
 model.add(Activation('relu'))
 model.add(MaxPooling2D(2, padding='same'))
-model.add(Dropout(0.2))
+model.add(Dropout(0.4))
 
-model.add(Conv2D(256, 2, padding='same'))
+model.add(Conv2D(64, 2, padding='same'))
 model.add(BatchNormalization())
 model.add(Activation('relu'))
-model.add(Conv2D(256, 2, padding='same'))
+model.add(Conv2D(64, 2, padding='same'))
 model.add(BatchNormalization())
 model.add(Activation('relu'))
-model.add(Conv2D(256, 2, padding='same'))
+model.add(Conv2D(64, 2, padding='same'))
 model.add(BatchNormalization())
 model.add(Activation('relu'))
 model.add(MaxPooling2D(2, padding='same'))
-model.add(Dropout(0.2))
+model.add(Dropout(0.4))
 model.add(Flatten())
 
 model.add(Dense(1024))
 model.add(BatchNormalization())
 model.add(Activation('relu'))
+model.add(Dropout(0.2))
 model.add(Dense(512))
 model.add(BatchNormalization())
 model.add(Activation('relu'))
@@ -272,30 +276,26 @@ model.add(Activation('relu'))
 
 model.add(Dense(3, activation='softmax'))
 
+model.summary()
 
-# 컴파일, 훈련
+
+
+
+
 model.compile(
     optimizer=Adam(
         learning_rate=0.001,
         epsilon=None),
-    loss='categorical_crossentropy',
+    loss='sparse_categorical_crossentropy',
     metrics='acc'
 )
 
 epoch=len(x_train)//batch_size
 
-# model.fit(
-#     x_train, y_train,
-#     validation_data=(x_val, y_val),
-#     epochs=1000,
-#     batch_size=8,
-#     callbacks=[es, rl, mc]
-# )
-
 model.fit_generator(
     trainset,
     validation_data=valset,
-    epochs=1,
+    epochs=1000,
     steps_per_epoch=epoch,
     callbacks=[es, rl, mc]
 )
@@ -305,54 +305,37 @@ pred=model.predict_generator(testflow)
 pred=np.argmax(pred, axis=-1)
 
 
+for i in range(len(test)):
+    if pred[i]==0:
+        np.save('c:/dataset/train_face/true_mask/' + str(i) + '.npy', arr=test[i])
+        img=np.load('c:/dataset/train_face/true_mask/' + str(i) + '.npy')
+        img=Image.fromarray((img*255).astype(np.uint8))
+        img.save('c:/dataset/train_face/true_mask/' + str(i) + '.jpg')
+        i+=1
+    elif pred[i]==1:
+        np.save('c:/dataset/train_face/true_nomask/' + str(i) + '.npy', arr=test[i])
+        img=np.load('c:/dataset/train_face/true_nomask/' + str(i) + '.npy')
+        img=Image.fromarray((img*255).astype(np.uint8))
+        img.save('c:/dataset/train_face/true_nomask/' + str(i) + '.jpg')
+        i+=1
+    elif pred[i]==2:
+        np.save('c:/dataset/train_face/true_pareidolia/' + str(i) + '.npy', arr=test[i])
+        img=np.load('c:/dataset/train_face/true_pareidolia/' + str(i) + '.npy')
+        img=Image.fromarray((img*255).astype(np.uint8))
+        img.save('c:/dataset/train_face/true_pareidolia/' + str(i) + '.jpg')
+        i+=1
+
+
+
+
+
+
 print(type(pred[0]))
 print(type(pred))
-print('전체 : ', len(all_list)) # 1632
+print('전체 : ', len(all_list))
 print('마스크사람 : ', len(all_list)-np.count_nonzero(pred))
 print('마스크비율 : ', 1-np.count_nonzero(pred)/len(all_list))
 print(pred.shape)
-
-import csv
-
-# imgnum=0
-# copunt=0
-# for i in pred:
-#     if pred[i]==0:
-#         # f=open('/c:/datasets/train_face/true_mask/' + str(imgnum) + '.csv', 'w', encoding='utf-8')
-#         # wr=csv.write(f)
-#         # cv2.imwrite('c:/datasets/train_face/true_mask/' + str(imgnum) + '.jpg', pred[count])
-#         np.save('c:/dataset/train_face/true_mask/' + str(imgnum) + '.npy', arr=pred[i])
-#         # img=np.load('c:/dataset/train_face/true_mask/' + str(imgnum) + '.npy')
-#         # im=Image.fromarray((img*255).astype(np.uint8))
-#         # im.save('c:/datasets/train_face/true_mask/true_mask' + str(imgnum) + '.jpg')
-#         imgnum+=1
-#     elif pred[i]==1:
-#         # f=open('/c:/datasets/train_face/true_mask/' + str(imgnum) + '.csv', 'w', encoding='utf-8')
-#         # wr=csv.write(f)
-#         # cv2.imwrite('c:/datasets/train_face/true_nomask/' + str(imgnum) + '.jpg', pred[count])
-#         np.save('c:/dataset/train_face/true_nomask/' + str(imgnum) + '.npy', arr=pred[i])
-#         # img=np.load('c:/dataset/train_face/true_nomask/' + str(imgnum) + '.npy')
-#         # im=Image.fromarray((img*255).astype(np.uint8))
-#         # im.save('c:/datasets/train_face/true_nomask/true_nomask' + str(imgnum) + '.jpg')
-
-#         imgnum+=1
-#     elif pred[i]==2:
-#         # f=open('/c:/datasets/train_face/true_mask/' + str(imgnum) + '.csv', 'w', encoding='utf-8')
-#         # wr=csv.write(f)
-#         # cv2.imwrite('c:/datasets/train_face/true_pareidolia/' + str(imgnum) + '.jpg', pred[count])
-#         np.save('c:/dataset/train_face/true_pareidolia/' + str(imgnum) + '.npy', arr=pred[i])
-#         # img=np.load('c:/dataset/train_face/true_pareidolia/' + str(imgnum) + '.npy')
-#         # im=Image.fromarray((img*255).astype(np.uint8))
-#         # im.save('c:/datasets/train_face/true_mask/true_pareidolia' + str(imgnum) + '.jpg')
-
-#         imgnum+=1
-#     count+=1
-
-import pandas as pd
-
-pred_df=pd.DataFrame(pred)
-
-print(pred_df.info())
 
 
 # results
@@ -364,3 +347,110 @@ print(pred_df.info())
 # 전체 :  1294
 # 마스크사람 :  229
 # 마스크비율 :  0.17697063369397215
+
+'''
+Model: "sequential"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #
+=================================================================
+conv2d (Conv2D)              (None, 256, 256, 64)      832
+_________________________________________________________________
+batch_normalization (BatchNo (None, 256, 256, 64)      256
+_________________________________________________________________
+activation (Activation)      (None, 256, 256, 64)      0
+_________________________________________________________________
+conv2d_1 (Conv2D)            (None, 256, 256, 64)      16448
+_________________________________________________________________
+batch_normalization_1 (Batch (None, 256, 256, 64)      256
+_________________________________________________________________
+activation_1 (Activation)    (None, 256, 256, 64)      0
+_________________________________________________________________
+conv2d_2 (Conv2D)            (None, 256, 256, 64)      16448
+_________________________________________________________________
+batch_normalization_2 (Batch (None, 256, 256, 64)      256
+_________________________________________________________________
+activation_2 (Activation)    (None, 256, 256, 64)      0
+_________________________________________________________________
+max_pooling2d (MaxPooling2D) (None, 128, 128, 64)      0
+_________________________________________________________________
+dropout (Dropout)            (None, 128, 128, 64)      0
+_________________________________________________________________
+conv2d_3 (Conv2D)            (None, 128, 128, 128)     32896
+_________________________________________________________________
+batch_normalization_3 (Batch (None, 128, 128, 128)     512
+_________________________________________________________________
+activation_3 (Activation)    (None, 128, 128, 128)     0
+_________________________________________________________________
+conv2d_4 (Conv2D)            (None, 128, 128, 128)     65664
+_________________________________________________________________
+batch_normalization_4 (Batch (None, 128, 128, 128)     512
+_________________________________________________________________
+activation_4 (Activation)    (None, 128, 128, 128)     0
+_________________________________________________________________
+conv2d_5 (Conv2D)            (None, 128, 128, 128)     65664
+_________________________________________________________________
+batch_normalization_5 (Batch (None, 128, 128, 128)     512
+_________________________________________________________________
+activation_5 (Activation)    (None, 128, 128, 128)     0
+_________________________________________________________________
+max_pooling2d_1 (MaxPooling2 (None, 64, 64, 128)       0
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 64, 64, 128)       0
+_________________________________________________________________
+conv2d_6 (Conv2D)            (None, 64, 64, 256)       131328
+_________________________________________________________________
+batch_normalization_6 (Batch (None, 64, 64, 256)       1024
+_________________________________________________________________
+activation_6 (Activation)    (None, 64, 64, 256)       0
+_________________________________________________________________
+conv2d_7 (Conv2D)            (None, 64, 64, 256)       262400
+_________________________________________________________________
+batch_normalization_7 (Batch (None, 64, 64, 256)       1024
+_________________________________________________________________
+activation_7 (Activation)    (None, 64, 64, 256)       0
+_________________________________________________________________
+conv2d_8 (Conv2D)            (None, 64, 64, 256)       262400
+_________________________________________________________________
+batch_normalization_8 (Batch (None, 64, 64, 256)       1024
+_________________________________________________________________
+activation_8 (Activation)    (None, 64, 64, 256)       0
+_________________________________________________________________
+max_pooling2d_2 (MaxPooling2 (None, 32, 32, 256)       0
+_________________________________________________________________
+dropout_2 (Dropout)          (None, 32, 32, 256)       0
+_________________________________________________________________
+flatten (Flatten)            (None, 262144)            0
+_________________________________________________________________
+dense (Dense)                (None, 1024)              268436480
+_________________________________________________________________
+batch_normalization_9 (Batch (None, 1024)              4096
+_________________________________________________________________
+activation_9 (Activation)    (None, 1024)              0
+_________________________________________________________________
+dropout_3 (Dropout)          (None, 1024)              0
+_________________________________________________________________
+dense_1 (Dense)              (None, 512)               524800
+_________________________________________________________________
+batch_normalization_10 (Batc (None, 512)               2048
+_________________________________________________________________
+activation_10 (Activation)   (None, 512)               0
+_________________________________________________________________
+dense_2 (Dense)              (None, 256)               131328
+_________________________________________________________________
+batch_normalization_11 (Batc (None, 256)               1024
+_________________________________________________________________
+activation_11 (Activation)   (None, 256)               0
+_________________________________________________________________
+dense_3 (Dense)              (None, 128)               32896
+_________________________________________________________________
+batch_normalization_12 (Batc (None, 128)               512       
+_________________________________________________________________
+activation_12 (Activation)   (None, 128)               0
+_________________________________________________________________
+dense_4 (Dense)              (None, 3)                 387
+=================================================================
+Total params: 269,993,027
+Trainable params: 269,986,499
+Non-trainable params: 6,528
+_________________________________________________________________
+'''
