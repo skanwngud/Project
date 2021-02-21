@@ -223,13 +223,13 @@ testset=datagen2.flow(x_test, y_test)
 testflow=datagen2.flow(test)
 
 model=Sequential()
-model.add(Conv2D(256, 2, padding='same', input_shape=(256, 256, 3)))
+model.add(Conv2D(256, 3, padding='same', input_shape=(256, 256, 3)))
 model.add(BatchNormalization())
 model.add(Activation('relu'))
-model.add(Conv2D(256, 2, padding='same'))
+model.add(Conv2D(256, 3, padding='same'))
 model.add(BatchNormalization())
 model.add(Activation('relu'))
-model.add(Conv2D(256, 2, padding='same'))
+model.add(Conv2D(256, 3, padding='same'))
 model.add(BatchNormalization())
 model.add(Activation('relu'))
 model.add(MaxPooling2D(2, padding='same'))
@@ -276,7 +276,6 @@ model.add(Activation('relu'))
 
 model.add(Dense(3, activation='softmax'))
 
-model.summary()
 
 
 
@@ -311,18 +310,21 @@ for i in range(len(test)):
         img=np.load('c:/dataset/train_face/true_mask/' + str(i) + '.npy')
         img=Image.fromarray((img*255).astype(np.uint8))
         img.save('c:/dataset/train_face/true_mask/' + str(i) + '.jpg')
+        print(str(i) + '번 째 파일은 mask 입니다.')
         i+=1
     elif pred[i]==1:
         np.save('c:/dataset/train_face/true_nomask/' + str(i) + '.npy', arr=test[i])
         img=np.load('c:/dataset/train_face/true_nomask/' + str(i) + '.npy')
         img=Image.fromarray((img*255).astype(np.uint8))
         img.save('c:/dataset/train_face/true_nomask/' + str(i) + '.jpg')
+        print(str(i) + '번 째 파일은 face 입니다.')
         i+=1
     elif pred[i]==2:
         np.save('c:/dataset/train_face/true_pareidolia/' + str(i) + '.npy', arr=test[i])
         img=np.load('c:/dataset/train_face/true_pareidolia/' + str(i) + '.npy')
         img=Image.fromarray((img*255).astype(np.uint8))
         img.save('c:/dataset/train_face/true_pareidolia/' + str(i) + '.jpg')
+        print(str(i) + '번 째 파일은 pareidolia 입니다.')
         i+=1
 
 
@@ -347,6 +349,10 @@ print(pred.shape)
 # 전체 :  1294
 # 마스크사람 :  229
 # 마스크비율 :  0.17697063369397215
+
+# 전체 :  1294
+# 마스크사람 :  54
+# 마스크비율 :  0.04173106646058733
 
 '''
 Model: "sequential"
