@@ -14,6 +14,8 @@ from keras.optimizers import Adam, RMSprop, Adamax, Adadelta
 from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 from keras.preprocessing.image import ImageDataGenerator
 from keras.utils import to_categorical
+from tensorflow.keras.applications.efficientnet import preprocess_input
+from tensorflow.keras.applications import EfficientNetB4
 
 from PIL import Image
 
@@ -147,7 +149,8 @@ datagen=ImageDataGenerator(
     width_shift_range=0.2,
     height_shift_range=0.2,
     vertical_flip=True,
-    horizontal_flip=True
+    horizontal_flip=True,
+    preprocessing_function=preprocess_input
 )
 
 datagen2=ImageDataGenerator()
