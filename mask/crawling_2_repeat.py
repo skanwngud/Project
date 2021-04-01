@@ -61,6 +61,6 @@ for image in images:
         '''
 
     except:
-        pass
+        pass # 문제가 생긴 경우 패스
 
 driver.close() # 웹페이지 종료
