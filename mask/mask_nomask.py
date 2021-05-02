@@ -161,7 +161,7 @@ print(test.shape)
 # print(data.shape) # (1328, 256, 256, 3)
 # print(label.shape) # (1328, )
 # print(test.shape) # (2129, 256, 256, 3)
-# print(type(test))
+# print(type(test)) 
 
 datagen=ImageDataGenerator(
     width_shift_range=0.2,
