@@ -8,16 +8,19 @@ import urllib.request
 driver = webdriver.Chrome()
 
 # 2. 크롬 브라우저를 이용해 해당 주소로 이동함
-driver.get('https://www.shutterstock.com/ko/search/one+people?image_type=photo')
+driver.get('https://pixabay.com/ko/photos/search//?cat=people')
 
 # 3. 웹페이지의 특정 요소를 찾음 (검색을 하기 위함)
-elem = driver.find_element_by_name('searchterm')
+elem = driver.find_element_by_name('q')
 
 # 4. 원하는 검색어를 입력
-elem.send_keys('one people')
+elem.send_keys('초상화 사람 얼굴')
 
 # 5. enter 키 입력
 elem.send_keys(Keys.RETURN)
 
 # 6. 사진의 각 요소를 선택 및 클릭
-driver.find_elements_by_css_selector('z_h_9d80b z_h_2f2f0')[0].click()
+driver.find_elements_by_css_selector('.photo-result-image')[0].click()
+time.sleep(3)
+imgUrl = driver.find_elements_by_css_selector('.media_container').get_attribute('src')
+urllib.request.urlretrieve(imgUrl, 'test.jpg')
