@@ -8,12 +8,13 @@ import urllib.request
 driver = webdriver.Chrome()
 
 # 2. 크롬 브라우저를 이용해 해당 주소로 이동함
-driver.get('https://pixabay.com/ko/photos/search//?cat=people')
+driver.get('https://pixabay.com/ko/photos/search/?cat=people')
 
 # 3. 웹페이지의 특정 요소를 찾음 (검색을 하기 위함)
 elem = driver.find_element_by_name('q')
 
 # 4. 원하는 검색어를 입력
+elem.click()
 elem.send_keys('초상화 사람 얼굴')
 
 # 5. enter 키 입력
