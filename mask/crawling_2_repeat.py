@@ -13,7 +13,7 @@ driver.get('https://www.google.co.kr/imghp?hl=ko&tab=ri&ogbl')
 elem=driver.find_element_by_name('q')
 
 # input keys & enter
-elem.send_keys('mask women')
+elem.send_keys('1920 1080 golf course')
 elem.send_keys(Keys.RETURN)
 
 # scroll web page
@@ -47,10 +47,11 @@ for image in images:
         imgUrl=driver.find_element_by_xpath('/html/body/div[2]/c-wiz/div[3]/div[2]/div[3]/div/div/div[3]/div[2]/c-wiz/div/div[1]/div[1]/div/div[2]/a/img').get_attribute('src') # 저장할 이미지 경로
         # if imgUrl==driver.find_element_by_link_text('https://images.costco-static.com/ImageDelivery/imageService?profileId=12026540&itemId=1462223-847&recipeName=680'):
         #     print('tq')
+        # imgUrl = driver.find_element_by_css_selector('.n3VNCb').get_attribute('src')
         opener=urllib.request.build_opener()
         opener.addheaders=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1941.0 Safari/537.36')]
         urllib.request.install_opener(opener)
-        urllib.request.urlretrieve(imgUrl, 'mask_men'+str(count)+'.jpg') # 이미지 저장
+        urllib.request.urlretrieve(imgUrl, str(count) + '_1920.jpg') # 이미지 저장
         count=count+1 # 이미지 파일 이름을 순서대로 맞추기 위해 증가시킴
         
         # time.sleep(5) # 저장 후 페이지 로드 할 시간을 위해 지연시간 추가

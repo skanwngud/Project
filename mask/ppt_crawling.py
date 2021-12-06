@@ -9,7 +9,7 @@ driver.get('https://www.google.co.kr/imghp?hl=ko&tab=ri&ogbl')
 
 elem=driver.find_element_by_name('q')
 
-elem.send_keys('mask women')
+elem.send_keys('1920 1080 golf course')
 elem.send_keys(Keys.RETURN)
 
 SCROLL_PAUSE_TIME=1
@@ -37,8 +37,8 @@ for image in images:
         image.click()
         time.sleep(3)
         imgUrl=driver.find_element_by_xpath('/html/body/div[2]/c-wiz/div[3]/div[2]/div[3]/div/div/div[3]/div[2]/c-wiz/div/div[1]/div[1]/div/div[2]/a/img').get_attribute('src')
-
-        urllib.request.urlretrieve(imgUrl, 'mask_men'+str(count)+'.jpg')
+        print(imgUrl)
+        urllib.request.urlretrieve(imgUrl, 'test_'+str(count)+'.jpg')
         count=count+1
 
     except:
