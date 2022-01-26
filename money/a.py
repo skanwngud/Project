@@ -1,13 +1,13 @@
-import mariadb
 import pandas as pd
 
-port = 3306
-user = 'root'
-passwd = 'vhfoq'
-
-conn = mariadb.connect(
-    user=user, password=passwd,
-    port=port
+df = pd.DataFrame(
+    columns=["입금", "출금", "저축액", "잔고", "목표 저축액"],
+    index=[f"2022.{i}" for i in range(1, 13)]
 )
-cur = conn.cursor()
 
+goal = 1000000
+income = 10000
+out = 100
+save = 1000
+
+print(df)
