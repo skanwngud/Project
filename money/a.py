@@ -11,7 +11,6 @@ passwd = connect_db.get('passwd')
 database = connect_db.get('database')
 
 
-
 try:
     conn = mariadb.connect(
         user=user, password=passwd,
