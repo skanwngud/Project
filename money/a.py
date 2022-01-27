@@ -1,13 +1,38 @@
 import pandas as pd
+import mariadb
+import sys
 
-df = pd.DataFrame(
-    columns=["입금", "출금", "저축액", "잔고", "목표 저축액"],
-    index=[f"2022.{i}" for i in range(1, 13)]
-)
+from db_conn import connect_db
 
-goal = 1000000
-income = 10000
-out = 100
-save = 1000
+host = connect_db.get('host')
+port = connect_db.get('port')
+user = connect_db.get('user')
+passwd = connect_db.get('passwd')
+database = connect_db.get('database')
 
-print(df)
+
+
+try:
+    conn = mariadb.connect(
+        user=user, password=passwd,
+        host=host, port=port, database=database,
+        autocommit=False
+    )
+    print(f"DB connected! {host}:{port}, {user} - {database}")
+except mariadb.Error as e:
+    print(f"DB has Error : {e}")
+    sys.exit(1)
+
+cur = conn.cursor()
+
+
+qurey = "select * from users;"
+
+cur.execute(qurey)
+
+row = cur.fetchall()
+print(row)
+# conn.commit()
+
+cur.close()
+conn.close()
