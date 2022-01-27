@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <title>HomePage</title>
@@ -7,6 +7,12 @@
 <body>
     <h1>This page is home page</h1>
     <p>Welcome this web site</p>
-    <a href="/main">Go to main page</a>
+    <form action="http://localhost:8080/login" method="post">
+        <input type="text" name="user_id" id="user_id" placeholder="ID"><br>
+        <input type="text" name="user_pw" id="user_pw" placeholder="PASSWORD"><br>
+        <input type="submit"><br>
+        <a href="http://localhost:8080/register">[Register]</a><br>
+        <a href="http://localhost:8080/manager">[Manager]</a>
+    </form>
 </body>
 </html>
