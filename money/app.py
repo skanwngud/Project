@@ -1,6 +1,6 @@
 # flask web server
 
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
@@ -9,6 +9,12 @@ app = Flask(__name__)
 def home():
     return render_template("home.html")
 
+@app.route("/login")
+def login_method():
+    if request.method == "POST":
+        name = request.args["user_id"]
+        passwd = request.args["user_pw"]
+        return render_template("login.html")
 
 @app.route("/register")
 def register():
