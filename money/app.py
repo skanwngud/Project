@@ -1,20 +1,29 @@
 # flask web server
 
 from flask import Flask, render_template, request
+import json
 
 app = Flask(__name__)
 
 
 @app.route("/")
 def home():
-    return render_template("home.html")
-
-@app.route("/login")
-def login_method():
     if request.method == "POST":
         name = request.args["user_id"]
-        passwd = request.args["user_pw"]
-        return render_template("login.html")
+    return render_template("home.html")
+
+
+@app.route("/login", methods=["POST"])
+def login_method():
+    if request.method == "POST":
+        name = request.form["user_id"]
+        passwd = request.form["user_pw"]
+        sql = f"select * from test where user_id = {name}, user_pw = {passwd}"
+        response = {
+            "results": ",,,"
+        }
+        return json.dumps(response)
+
 
 @app.route("/register")
 def register():
