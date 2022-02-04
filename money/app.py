@@ -20,7 +20,7 @@ def login_method():
         passwd = request.form["user_pw"]
         sql = f"select * from test where user_id = {name}, user_pw = {passwd}"
         response = {
-            "results": ",,,"
+            "results": f"{sql}"
         }
         return json.dumps(response)
 
