@@ -22,7 +22,9 @@ def login_method():
         response = {
             "results": f"{sql}"
         }
-        return json.dumps(response)
+
+        response = json.dumps(response)
+        return render_template("login.html")
 
 
 @app.route("/register")
