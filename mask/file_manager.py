@@ -1,5 +1,6 @@
 import os
 import glob
+import cv2
 
 class FileManager:
     def get_images_list(self, path):
@@ -13,4 +14,11 @@ class FileManager:
             os.rename(file_name, after_file_name)
         return after_file_name
     
+    def load_img(self, path):
+        if not os.path.isfile(path):
+            print("there is no file")
+            return
+        img = cv2.imread(path)
+        return img
+        
     
