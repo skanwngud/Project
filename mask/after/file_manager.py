@@ -21,4 +21,8 @@ class FileManager:
         img = cv2.imread(path)
         return img
         
+    def move_file(self, file, path):
+        pass
     
+    def del_file(self, file, path):
+        pass

@@ -66,5 +66,5 @@ class FaceCrop:
 
 if __name__ == "__main__":
     face_crop = FaceCrop()
-    print(face_crop.crop_face("../", True, True))
+    print(face_crop.crop_face("./", True, True))
 
