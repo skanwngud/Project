@@ -48,14 +48,6 @@ class MakeDataset:
 
         return flip_img
 
-    # move to horizontal
-    def move_to_horizontal(self, image, px=0):
-        pass
-
-    # Rotation image
-    def rotation_img(self, image, angle):
-        pass
-
 
 if __name__ == "__main__":
     img = cv2.imread('../face.jpg')
@@ -63,4 +55,3 @@ if __name__ == "__main__":
     md = MakeDataset("./test.jpg")
     # md.chg_brightness(img, "d")
     md.flip_hroizontal(img, "v")
-    # md.move_to_horizontal(img, 0.2)
