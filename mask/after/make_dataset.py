@@ -17,7 +17,8 @@ class MakeDataset:
         """
 
         assert type in ["b", "d"], "please choose 'b' or 'd'"
-        temp_array = np.full(image.shape, (128, 128, 128), dtype=np.uint8)
+        brightness = tuple(np.random.randint(0, 256, size=3))
+        temp_array = np.full(image.shape, brightness, dtype=np.uint8)
 
         if type == "b":
             chg_img = cv2.add(image, temp_array)
