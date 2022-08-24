@@ -29,3 +29,7 @@ class Models:
 
         self.md = MakeDataset()
 
+
+if __name__ == "__main__":
+    md = Models()
+
