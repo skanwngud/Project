@@ -1,12 +1,41 @@
-a = input("입금이면 1, 출금이면 2 : ")
+class Account:
+    def __init__(self):
+        self.__accID = ""
+        self.__balance = 0
+        self.__accNum = 0
+        self.__cusName = ""
 
-if int(a) == 1:
-    print("입금을 선택하셨습니다.")
-    b = input("금액을 입력하세요. : ")
-    if int(b) > 0:
-        print(f"입력하신 금액은 {b}원입니다.")
-elif int(a) == 2:
-    print("출금을 선택하셨습니다.")
-    b = int(input("금액을 입력하세요. : "))
-    if b > 0:
-        print(f"입력하신 금액은 {b}원입니다.")
+    def ShowMenu(self):
+        print("""
+        -----Menu----
+        1. Make Account
+        2. Deposit
+        3. Withdraw
+        4. Show All Account Info
+        5. Exit
+        """)
+        pass
+
+    def MakeAccount(self):
+        print("[Make Account]")
+        self.__accID = int(input("Account ID: "))
+        self.__cusName = str(input("Name: "))
+        self.__balance = int(input("Amount Money: "))
+
+        self.__accNum += 1
+
+    def DepositMoney(self):
+        print("[Deposit]")
+        id = int(input("Account ID: "))
+        pass
+
+    def WithdrawMoney(self):
+        pass
+
+    def ShowAllAccount(self):
+        pass
+
+if __name__ == "__main__":
+    acc = Account()
+    acc.ShowMenu()
+    acc.MakeAccount()
