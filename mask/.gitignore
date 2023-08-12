@@ -1,6 +1,0 @@
-*.jpg
-*test*
-chromedriver
-*.xml
-.idea
-__pycache__
